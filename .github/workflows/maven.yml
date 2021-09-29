@@ -25,6 +25,6 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Build the target folder
-      run: echo hello > target/de-sy-file.jar
+      run: echo hello > target/jb-hello-world-maven-0.1.0-shaded.jar
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag workout-lib:$(date +%s)
