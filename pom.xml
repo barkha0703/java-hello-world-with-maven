@@ -7,6 +7,13 @@
     <packaging>jar</packaging>
     <version>0.1.0</version>
 
+    <configuration>
+   <repository>foobar/${project.artifactId}</repository>
+   <tag>${project.version}</tag>
+   <buildArgs>
+      <JAR_FILE>${project.build.directory}/${project.build.finalName}.jar</JAR_FILE>
+   </buildArgs>
+</configuration>
     <!-- tag::joda[] -->
      <properties>
            <java.version>1.8</java.version>
