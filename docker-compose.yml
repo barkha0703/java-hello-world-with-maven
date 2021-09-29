@@ -3,6 +3,6 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
-  redis:
-    image: "redis:alpine"
+      - "8080:8080"
+  workout-lib:
+    image: "workout-lib:1632913034"
