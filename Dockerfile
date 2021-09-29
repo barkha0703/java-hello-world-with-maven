@@ -1,20 +1,13 @@
-FROM maven:3.8.2-openjdk-16-slim AS build
-
-# app and environment variables
-ENV APP_ARTIFACT_CANONICAL_NAME workout-library
-ENV APP_ARTIFACT $APP_ARTIFACT_CANONICAL_NAME.jar
-ENV APP_HOME_PARENT /apps
-ENV APP_HOME $APP_HOME_PARENT/$APP_ARTIFACT_CANONICAL_NAME
-
-COPY src $APP_HOME/src
-COPY pom.xml $APP_HOME
-
-RUN mvn -f $APP_HOME/pom.xml clean package
-
 FROM openjdk:16-jdk-alpine
+# ENV APP_ARTIFACT_CANONICAL_NAME workout-library
+# ENV APP_HOME_PARENT opt/app
+# ENV APP_HOME $APP_HOME_PARENT/$APP_ARTIFACT_CANONICAL_NAME
 
-COPY --from=build $APP_HOME/target/workout-library-1.0.0-SNAPSHOT.jar app.jar
-COPY --from=build $APP_HOME/target/classes/application.properties /conf/application.properties
-
+ADD ./home/runner/work/java-hello-world-with-maven/java-hello-world-with-maven/target/ /usr/local/ 
+WORKDIR /home/runner/work/java-hello-world-with-maven/java-hello-world-with-maven/target/
+COPY jb-hello-world-maven-0.1.0-shaded.jar opt/app/app.jar
+#COPY --from=build /home/runner/work/java-hello-world-with-maven/java-hello-world-with-maven/target/classes/application.properties /conf/application.properties
+WORKDIR /opt/app
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=/conf/application.properties"]
+#ENTRYPOINT ["java", "-jar", "app.jar", "--spring.config.location=/conf/application.properties"]
+ENTRYPOINT ["java","-jar","app.jar"]
