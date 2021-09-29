@@ -6,7 +6,7 @@ FROM openjdk:16-jdk-alpine
 
 
 WORKDIR /home/runner/work/java-hello-world-with-maven/java-hello-world-with-maven/target/
-COPY workout-library-1.0.0-SNAPSHOT.jar opt/app/app.jar
+COPY jb-hello-world-maven-0.1.0-shaded.jar opt/app/app.jar
 #COPY --from=build /home/runner/work/java-hello-world-with-maven/java-hello-world-with-maven/target/classes/application.properties /conf/application.properties
 
 WORKDIR /opt/app
