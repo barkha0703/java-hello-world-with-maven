@@ -25,6 +25,6 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Build the Docker image
-      run: cp target/jb-hello-world-maven-0.1.0-shaded.jar app.jar
+      run: cp /home/runner/work/java-hello-world-with-maven/java-hello-world-with-maven/target/jb-hello-world-maven-0.1.0-shaded.jar app.jar
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag workout-lib:$(date +%s)
