@@ -1,0 +1,39 @@
+#Declare variables to be passed into your template. The variable values can be overridden by application configurations values.
+replicaCount: 3
+appName: workout-library
+outputCfgAsEnvVars: true
+outputCfgAsJavaOpts: true
+livenessProbeAcceptHeaders: application/json, text/plain, text/html
+heartbeatPath: /actuator/health
+livenessProbeFailureThreshold: 5
+livenessProbeInitialDelaySeconds: 90
+livenessProbePeriodSeconds: 60
+livenessProbeTimeoutSeconds: 2
+readinessProbeAcceptHeaders: application/json, text/plain, text/html
+readinessProbePath: /actuator/health/liveness
+readinessProbePeriodSeconds: 10
+readinessProbeTimeoutSeconds: 2
+limitsCpu: 500m
+limitsMemory: 512M
+requestCpu: 100m
+requestMemory: 256M
+configMountPath: 
+namespace: realm
+JVM_OPTS:
+image:
+  repository: campgladiatortech/workout-library
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  name: http
+  type: ClusterIp
+  externalPort: 8080
+  internalPort: 8080
+resources:
+# Seeting a very small resource-req, as it seems to be defaulting anyway.
+  limits:
+    cpu: 500m
+    memory: 512M
+  requests:
+    cpu: 100m
+    memory: 256M
