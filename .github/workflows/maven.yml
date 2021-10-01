@@ -29,5 +29,5 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag workout-lib:$(date +%s)
     - name: execute docker compose
-      run: docker push barkhab/test_2_public/workout-lib:latest
+      run: docker push workout-lib:latest
       
