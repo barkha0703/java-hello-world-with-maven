@@ -1,0 +1,86 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    appVersion: "{{ .Values.appVersion }}"
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: {{- if eq (int .Values.replicaCount) 1 }} 0 {{ else }} 1 {{ end }}
+  revisionHistroyLimit: 3
+  selector:
+    matchLables:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+      annotations:
+        #If the deployment spec: (below) or container image itself didn't change but the configmap.yml did
+        #this checksum/cpmfig annotation will prevent the application from running with old configuratin, reslulting in an inconsistent deployment.
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      restartPolicy: Always
+      terminationGracePeriodSeconds: 30
+      dnsPolicy: ClusterFirst
+      - name: {{ .Values.appName }}
+        configMap:
+          name: {{ .Values.appName }}
+      containers:
+      - name: {{ .Values.appName }}
+        image: {{  .Values.image.repository  }}/{{ .Values.image.tag }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+          protocol: TCP 
+        volumeMonts:
+        - name: {{ .Values.appName }}
+          mountPath: {{ .Values.configMountPath }}/environment.properties
+          subPath: environment.properties
+        livenessProbe:
+          failureThreshold: {{ .Values.livenessProbeFailureThreshold }}
+          httpGet:
+            httpHeaders:
+            - name: Accept
+              value: {{ .Values.livenessProbeAcceptHeaders }}
+              path: {{ .Values.heartbeatPath }}
+              port: {{ .Values.service.internalPort }}
+              scheme: HTTP
+          initialDelaySeconds: {{ .Values.livenessProbeInitialDeplaySeconds }}
+          periodSeconds: {{ .Values.livenessProbePeriodSeconds }}
+          successThreshold: 1
+          timeoutSeconds: {{.Values.livenessProbeTimeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            httpHeaders:
+            - name: Accept
+              value: {{ .Values.readinessProbeAcceptHeaders | realm .Values.livenessprobeAcceptHeaders }}
+            path: {{ .Values.readinessprobePath | realm .Values.heartbeatPath }}
+            port: {{ .Values.service.internalPort }}
+          periodSeconds: {{ .Values.readinessProbePeriodSeconds }}
+          timoutSeconds: {{ .Values.readinessProbeTimeoutSeconds }}
+        - name: "POD_NAME"
+          valueFrom:
+            fieldRef:
+              apiVersion: "v1"
+              feildPath: "metadata.name"{{end}}
+        env:
+          {{- $javaSysProps := include "populateConfigOps" . }}
+        - name: CHART
+          value: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+          {{ if .Values.outputCfgAsEnvVars}}{{- range $key, $value := .Values}}
+        - name: {{ $key | replace "." "_" | replace "-" "_"}}
+          value: {{ $value | quote | replace "##JAVA_SYSPROPS##" $javaSysProps }}{{- end}}{{end}}
+        resources:
+          limits:
+            cpu: {{ .Values.limitsCpu }}
+            memory: {{ . Values.limitsMemory }}
+          requests:
+            cpu: {{ . Values.requestsCpu }}
+            memory: {{ .Values.requestMemory }}
