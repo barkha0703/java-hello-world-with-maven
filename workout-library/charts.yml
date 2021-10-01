@@ -1,0 +1,4 @@
+apiVersion: v1
+description: helm chart for Kubernetes
+name: java-webapp
+version: 1.0.0
