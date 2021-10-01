@@ -33,7 +33,7 @@ jobs:
     - name: run kuberctl command
       run: kubectl cluster-info
     - name: install heml
-      run: helm install RELEASE-NAME ./helm-chart/workout-library
+      run: helm install workout-library ./helm-chart/workout-library
       
     #- name: Install Helm
     #  run: |docker pull debian
