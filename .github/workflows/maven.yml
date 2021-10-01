@@ -28,7 +28,9 @@ jobs:
       run: echo hello > target/jb-hello-world-maven-0.1.0-shaded.jar
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag workout-lib:$(date +%s)
-    - name: Install Helm
-      run: |
-        curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+    - name: Build the Docker image
+      run: docker pull debian
+    #- name: Install Helm
+    #  run: |docker pull debian
+    #    curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
       
