@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.k8sNamespace }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    environment.properties: |
+      {{ range $key, $value := .Values }}
+        {{$key}}: {{$value}}
+        {{end}}
+    {{end}}
